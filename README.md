@@ -93,8 +93,8 @@ This README will be updated regularly to reflect:
 
 ---
 
-**Last Updated**: August 23, 2025  
-**Course Status**: Finished but learning continues  
+
+**Course Status**: Finished but learning continues. updates will keep happening here. 
 
 
 *This repository is a living document that will evolve throughout the bootcamp. Check back regularly for updates and new content!*
