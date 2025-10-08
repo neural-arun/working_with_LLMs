@@ -1,0 +1,11 @@
+# requirements.txt
+
+# For handling data, especially from CSV or JSONL test files
+pandas
+
+# For making API calls, e.g., in a custom test generator
+requests
+
+# OpenAI client, useful if your custom assertions or generators
+# need to interact with OpenAI models/embeddings
+openai

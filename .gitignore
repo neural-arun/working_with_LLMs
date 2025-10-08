@@ -1,0 +1,50 @@
+# .gitignore
+
+# Node.js / npm dependencies
+# Promptfoo is a Node.js tool and installs dependencies here.
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Python dependencies & artifacts
+# To ignore virtual environment folders
+.venv/
+venv/
+env/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Distribution / packaging
+.eggs/
+*.egg-info/
+dist/
+build/
+
+# Generated Output & Results
+# The PDF specifies that outputs like reports and JSON results are saved here.
+results/
+*.json
+*.html
+*.csv
+*.yaml
+*.log
+
+# Secrets & Environment Variables
+# API keys and other secrets should never be committed.
+.env
+.env.*
+secrets.json
+
+# IDE & Editor specific files
+.vscode/
+.idea/
+*.swp
+
+# OS-specific files
+.DS_Store
+Thumbs.db
