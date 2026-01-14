@@ -29,7 +29,7 @@ build/
 # The PDF specifies that outputs like reports and JSON results are saved here.
 results/
 *.json
-*.html
+
 *.csv
 *.yaml
 *.log
