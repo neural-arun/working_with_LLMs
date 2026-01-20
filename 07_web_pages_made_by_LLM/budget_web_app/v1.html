@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arun & Sarita's Budget - Sept 2025</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+        .header-gradient {
+            background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+        }
+        .summary-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .summary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        textarea {
+            resize: vertical;
+        }
+        .expense-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            background-color: #f8fafc;
+            margin-bottom: 0.5rem;
+            transition: background-color 0.2s;
+            border: 1px solid #e2e8f0;
+        }
+        .expense-item:hover {
+            background-color: #f1f5f9;
+        }
+        .expense-item input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.75rem;
+            cursor: pointer;
+            accent-color: #4f46e5;
+        }
+        .expense-item.paid {
+             background-color: #eef2ff; 
+             border-color: #a5b4fc;
+        }
+         .expense-item.paid label {
+            text-decoration: line-through;
+            color: #64748b;
+        }
+        .daily-card {
+            transition: all 0.2s ease-in-out;
+        }
+        .daily-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 25px -5px rgba(0,0,0,0.1);
+        }
+        .main-title {
+            color: #4338ca;
+        }
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+        .calendar-day {
+            text-align: center;
+            padding: 0.75rem 0.25rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .calendar-day.clickable {
+            cursor: pointer;
+        }
+        .calendar-day.clickable:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        .quote-highlight {
+            color: #5b21b6;
+            background-color: #f5f3ff;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            border-left: 3px solid #7c3aed;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        <!-- Header -->
+        <header class="text-center mb-8 bg-white p-6 rounded-xl shadow-lg header-gradient">
+            <h1 class="text-4xl font-bold text-white">Arun & Sarita's Budget</h1>
+            <p class="text-lg text-indigo-200 mt-1">September 2025</p>
+        </header>
+
+        <!-- Summary Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="summary-card bg-white p-6 rounded-xl shadow-md border-l-4 border-green-400">
+                <h2 class="text-lg font-semibold text-gray-500">Total Income</h2>
+                <p class="text-3xl font-bold text-green-500">₹10,000.00</p>
+            </div>
+            <div id="total-expenses-card" class="summary-card bg-white p-6 rounded-xl shadow-md border-l-4 border-red-400">
+                <h2 class="text-lg font-semibold text-gray-500">Logged Expenses</h2>
+                <p id="total-expenses" class="text-3xl font-bold text-red-500">₹0.00</p>
+            </div>
+            <div id="remaining-balance-card" class="summary-card bg-white p-6 rounded-xl shadow-md border-l-4 border-blue-400">
+                <h2 class="text-lg font-semibold text-gray-500">Remaining Balance</h2>
+                <p id="remaining-balance" class="text-3xl font-bold text-blue-500">₹10,000.00</p>
+            </div>
+        </div>
+
+        <!-- Expense Categories Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <div id="housing-expenses" class="bg-white p-6 rounded-xl shadow-md"></div>
+            <div id="utilities-expenses" class="bg-white p-6 rounded-xl shadow-md"></div>
+            <div id="personal-expenses" class="bg-white p-6 rounded-xl shadow-md"></div>
+        </div>
+
+        <!-- Calendar Section -->
+        <div id="calendar-section" class="bg-white p-6 rounded-xl shadow-md mb-8">
+             <h2 class="text-2xl font-bold mb-4 main-title">Monthly Overview</h2>
+             <div id="calendar-container"></div>
+        </div>
+
+        <!-- Daily Tracker Section -->
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <h2 class="text-2xl font-bold mb-4 main-title">Daily & Miscellaneous Expenses</h2>
+            <div id="daily-tracker" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <!-- Daily cards will be populated by JavaScript -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const YEAR = 2025;
+            const MONTH = 8; // 0-indexed for September
+
+            const config = {
+                totalIncome: 10000,
+                expenseCategories: {
+                    "Housing": [
+                        { name: "Rent", amount: 4000 },
+                    ],
+                    "Utilities": [
+                        { name: "Water Bill", amount: 150 },
+                        { name: "Cooking Gas", amount: 600 },
+                    ],
+                    "Personal": [
+                        { name: "Arun's Money", amount: 1000 },
+                        { name: "Sarita's Money", amount: 1000 },
+                        { name: "Gym", amount: 600 },
+                        { name: "Library", amount: 500 },
+                    ]
+                },
+                dailyGuideline: 80
+            };
+
+            const dailyTrackerContainer = document.getElementById('daily-tracker');
+            const calendarContainer = document.getElementById('calendar-container');
+            const totalExpensesEl = document.getElementById('total-expenses');
+            const remainingBalanceEl = document.getElementById('remaining-balance');
+
+            let budgetData = {
+                paidFixedExpenses: [],
+                loggedDailyAmounts: {}, // e.g., { '2025-09-01': 75 }
+                notes: {}
+            };
+
+            function init() {
+                loadData();
+                renderExpenseCategories();
+                renderCalendar();
+                renderDailyTracker();
+                updateSummary();
+            }
+
+            function saveData() {
+                localStorage.setItem('sept2025BudgetInteractive', JSON.stringify(budgetData));
+            }
+
+            function loadData() {
+                const savedData = localStorage.getItem('sept2025BudgetInteractive');
+                if (savedData) {
+                    budgetData = JSON.parse(savedData);
+                }
+            }
+            
+            function calculateTotalExpenses() {
+                let total = 0;
+                // Add paid fixed expenses
+                for (const category in config.expenseCategories) {
+                    config.expenseCategories[category].forEach(item => {
+                        if (budgetData.paidFixedExpenses.includes(item.name)) {
+                            total += item.amount;
+                        }
+                    });
+                }
+                
+                // Add logged daily amounts
+                for (const date in budgetData.loggedDailyAmounts) {
+                    total += parseFloat(budgetData.loggedDailyAmounts[date]) || 0;
+                }
+                
+                return total;
+            }
+
+            function renderExpenseCategories() {
+                for (const category in config.expenseCategories) {
+                    const containerId = `${category.toLowerCase()}-expenses`;
+                    const container = document.getElementById(containerId);
+                    if (container) {
+                        let itemsHTML = config.expenseCategories[category].map(item => {
+                            const isPaid = budgetData.paidFixedExpenses.includes(item.name);
+                            const escapedName = item.name.replace(/'/g, "\\'");
+                            return `
+                                <div class="expense-item ${isPaid ? 'paid' : ''}">
+                                    <input type="checkbox" id="expense-${item.name.replace(/\s+/g, '-')}" 
+                                           onchange="toggleFixedExpense('${escapedName}')" ${isPaid ? 'checked' : ''}>
+                                    <label for="expense-${item.name.replace(/\s+/g, '-')}" class="flex justify-between w-full cursor-pointer">
+                                        <span class="font-medium">${item.name}</span>
+                                        <span class="font-semibold text-gray-700">₹${item.amount.toFixed(2)}</span>
+                                    </label>
+                                </div>`;
+                        }).join('');
+
+                        container.innerHTML = `
+                            <h2 class="text-2xl font-bold mb-4 main-title">${category}</h2>
+                            ${itemsHTML}
+                        `;
+                    }
+                }
+            }
+
+            function renderCalendar() {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const firstDayOfMonth = new Date(YEAR, MONTH, 1);
+                const startingDayOfWeek = firstDayOfMonth.getDay(); // 0=Sun, 1=Mon, ...
+                const daysInMonth = new Date(YEAR, MONTH + 1, 0).getDate();
+
+                let calendarHTML = '<div class="calendar">';
+
+                // Day headers
+                const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                dayNames.forEach(name => {
+                    calendarHTML += `<div class="font-bold text-gray-500 text-center text-sm">${name}</div>`;
+                });
+
+                // Blank cells for days before the 1st
+                for (let i = 0; i < startingDayOfWeek; i++) {
+                    calendarHTML += '<div></div>';
+                }
+
+                // Day cells
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const currentDate = new Date(YEAR, MONTH, day);
+                    const dateString = currentDate.toISOString().split('T')[0];
+                    const dailyAmount = budgetData.loggedDailyAmounts[dateString];
+
+                    let colorClass = 'bg-gray-100 text-gray-700';
+                    if (currentDate.getTime() > today.getTime()) {
+                        colorClass = 'bg-yellow-200 text-yellow-800'; // Future date
+                    } else if (dailyAmount !== undefined) {
+                        if (dailyAmount > config.dailyGuideline) {
+                            colorClass = 'bg-red-300 text-red-900'; // Over budget
+                        } else {
+                            colorClass = 'bg-green-300 text-green-900'; // On or under budget
+                        }
+                    }
+
+                    calendarHTML += `<div class="calendar-day clickable ${colorClass}" onclick="scrollToDate('${dateString}')">${day}</div>`;
+                }
+
+                calendarHTML += '</div>';
+                calendarContainer.innerHTML = calendarHTML;
+            }
+
+
+            function renderDailyTracker() {
+                const hindiQuotes = [ "सकारात्मक रहें।","मेहनत इतनी खामोशी से करो कि सफलता शोर मचा दे।", "बचत एक अच्छी आदत है, इसे अपनाएं।", "आज का निवेश, कल का सुख।", "कड़ी मेहनत का कोई विकल्प नहीं है।", "अपने खर्चों को नियंत्रित करें, भविष्य को नहीं।", "सपने वो नहीं जो आप नींद में देखते हैं, सपने वो हैं जो आपको सोने नहीं देते।", "पैसा पेड़ पर नहीं उगता।", "सफलता का रास्ता मेहनत से होकर जाता है।", "छोटी-छोटी बचतें बड़ी संपत्ति बनाती हैं।", "जो आज मेहनत करेगा, वो कल राज करेगा।", "एक रुपया बचाया मतलब एक रुपया कमाया।", "आलस सफलता का सबसे बड़ा दुश्मन है।", "वित्तीय योजना बनाना सफलता की पहली सीढ़ी है।", "परिश्रम ही सौभाग्य की जननी है।", "अपने पैसों के मालिक बनें, गुलाम नहीं।", "जब तक आप रुकते नहीं, तब तक कोई फर्क नहीं पड़ता कि आप कितना धीमे चल रहे हैं।", "कर्ज से बचें, यह भविष्य की कमाई चुराता है।", "सफलता के लिए जुनून बहुत ज़रूरी है।", "बजट बनाना आपके पैसे को दिशा देता है।", "हमेशा सीखते रहो, कमाई बढ़ती रहेगी।", "फिजूलखर्ची से गरीबी आती है।", "अवसर सूर्योदय की तरह होते हैं, देर करने पर चले जाते हैं।", "अपनी आय के भीतर जीना सीखें।", "अनुशासन ही लक्ष्य और उपलब्धि के बीच का पुल है।", "हर दिन थोड़ा-थोड़ा बचाएं।", "जीतने वाले कोई अलग काम नहीं करते, वे हर काम को अलग ढंग से करते हैं।", "निवेश ज्ञान में सर्वोत्तम ब्याज देता है।", "आपकी मेहनत आपको कभी निराश नहीं करेगी।", "पैसे का सही इस्तेमाल ही असली अमीरी है।", "गिरकर उठना और फिर से प्रयास करना ही असली जीत है।"
+                ];
+
+                dailyTrackerContainer.innerHTML = '';
+                const daysInMonth = new Date(YEAR, MONTH + 1, 0).getDate();
+                
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(YEAR, MONTH, day);
+                    const dateString = date.toISOString().split('T')[0];
+                    const dayOfWeek = date.toLocaleDateString('en-IN', { weekday: 'short' });
+                    const quote = hindiQuotes[day - 1] || "सकारात्मक रहें।";
+
+                    const card = document.createElement('div');
+                    card.id = `day-card-${dateString}`;
+                    card.className = `daily-card p-4 rounded-lg shadow border-t-4 flex flex-col ${dayOfWeek === 'Sun' ? 'bg-indigo-50 border-indigo-400' : 'bg-white border-gray-300'}`;
+                    
+                    const loggedDailyValue = budgetData.loggedDailyAmounts[dateString] || '';
+                    const dailyLogItem = `
+                        <div class="bg-gray-100 p-2 rounded-md">
+                            <p class="text-sm font-semibold text-center text-gray-600">Daily Essentials</p>
+                            <p class="text-xs text-center text-gray-500 mb-2">Guideline: ₹${config.dailyGuideline}</p>
+                            <div class="flex items-center space-x-2">
+                                <input type="number" placeholder="Amt" id="daily-amt-${dateString}" class="w-full text-sm p-1 border rounded" value="${loggedDailyValue}">
+                                <button class="px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600" onclick="logDailyAmount('${dateString}')">Log</button>
+                            </div>
+                        </div>
+                    `;
+
+                    const note = budgetData.notes[dateString] || '';
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <div class="font-bold text-lg">${day}</div>
+                                <div class="text-sm font-semibold ${dayOfWeek === 'Sun' ? 'text-indigo-600' : 'text-gray-500'}">${dayOfWeek}</div>
+                            </div>
+                            <div class="space-y-3">
+                                ${dailyLogItem}
+                            </div>
+                        </div>
+                        <div class="mt-auto pt-3">
+                             <p class="text-xs text-center mb-2 italic quote-highlight">"${quote}"</p>
+                             <textarea class="w-full text-sm p-1.5 border rounded h-20 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-400 outline-none" placeholder="Add items you bought today..." onchange="saveNote('${dateString}', this.value)">${note}</textarea>
+                        </div>
+                    `;
+                    dailyTrackerContainer.appendChild(card);
+                }
+            }
+
+            function updateSummary() {
+                const totalExp = calculateTotalExpenses();
+                const remaining = config.totalIncome - totalExp;
+
+                totalExpensesEl.textContent = `₹${totalExp.toFixed(2)}`;
+                remainingBalanceEl.textContent = `₹${remaining.toFixed(2)}`;
+
+                const remainingCard = document.getElementById('remaining-balance-card');
+                remainingCard.classList.remove('border-blue-400', 'border-yellow-400', 'border-red-400');
+                const pEl = remainingCard.querySelector('p');
+                pEl.classList.remove('text-blue-500', 'text-yellow-500', 'text-red-500');
+
+                if (remaining >= config.totalIncome * 0.25) {
+                    remainingCard.classList.add('border-blue-400');
+                    pEl.classList.add('text-blue-500');
+                } else if (remaining >= 0) {
+                     remainingCard.classList.add('border-yellow-400');
+                     pEl.classList.add('text-yellow-500');
+                } else {
+                     remainingCard.classList.add('border-red-400');
+                     pEl.classList.add('text-red-500');
+                }
+            }
+
+            window.toggleFixedExpense = (name) => {
+                const index = budgetData.paidFixedExpenses.indexOf(name);
+                if (index > -1) {
+                    budgetData.paidFixedExpenses.splice(index, 1);
+                } else {
+                    budgetData.paidFixedExpenses.push(name);
+                }
+                saveData();
+                renderExpenseCategories();
+                updateSummary();
+            };
+
+            window.logDailyAmount = (dateString) => {
+                const amountInput = document.getElementById(`daily-amt-${dateString}`);
+                const amount = parseFloat(amountInput.value);
+                if (!isNaN(amount) && amount >= 0) {
+                    budgetData.loggedDailyAmounts[dateString] = amount;
+                } else {
+                     delete budgetData.loggedDailyAmounts[dateString];
+                }
+                saveData();
+                updateSummary();
+                renderCalendar();
+            };
+            
+            window.scrollToDate = (dateString) => {
+                const element = document.getElementById(`day-card-${dateString}`);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    element.classList.add('ring-2', 'ring-indigo-500', 'ring-offset-2');
+                    setTimeout(() => {
+                         element.classList.remove('ring-2', 'ring-indigo-500', 'ring-offset-2');
+                    }, 1500);
+                }
+            }
+
+            window.saveNote = (dateString, text) => {
+                budgetData.notes[dateString] = text.trim();
+                saveData();
+            };
+
+            init();
+        });
+    </script>
+</body>
+</html>

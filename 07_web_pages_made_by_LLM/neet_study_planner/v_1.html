@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEET Roadmap for Ashutosh Yadav</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+        }
+        .motivational-quote {
+            transition: all 0.5s ease-in-out;
+            transform: translateY(10px);
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+        }
+        .motivational-quote.show {
+            transform: translateY(0);
+            opacity: 1;
+            max-height: 100px; /* Adjust as needed */
+        }
+        .day-card.completed {
+            background-color: #e6fffa; /* A light green for completed days */
+            border-color: #38a169;
+        }
+        /* Custom styles for number input to hide arrows */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        .review-day {
+            background-image: linear-gradient(to right, #fef2f2, #f3f4f6, #eff6ff);
+            border-color: #6d28d9;
+        }
+        .syllabus-subject-card {
+            transition: all 0.3s ease-in-out;
+        }
+        .sunday-glow {
+            box-shadow: 0 0 10px 3px rgba(250, 204, 21, 0.7); /* Yellow glow */
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Header Section -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900">NEET Dropper Roadmap</h1>
+            <p class="text-xl md:text-2xl text-blue-600 mt-2">Welcome, Ashutosh Yadav!</p>
+            <p class="text-lg text-indigo-600 font-semibold mt-1">हर दिन, एक कदम मंज़िल के करीब।</p>
+            <p id="header-subtitle" class="text-md text-gray-600 mt-2">Your daily checklist for September to conquer NEET.</p>
+        </header>
+
+        <div id="daily-tracker-view">
+            <!-- Progress Bar Section -->
+            <div class="mb-10 px-2">
+                <h3 class="text-lg font-semibold mb-2 text-center">September Progress</h3>
+                <div class="w-full bg-gray-200 rounded-full h-4">
+                    <div id="progressBar" class="bg-green-500 h-4 rounded-full text-xs font-medium text-blue-100 text-center p-0.5 leading-none" style="width: 0%">
+                       <span id="progressText">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View Toggle Button -->
+            <div class="text-center mb-6">
+                <button id="toggle-view-btn" class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300">
+                    View Syllabus Tracker
+                </button>
+            </div>
+
+            <!-- Calendar Navigation -->
+            <div class="mb-10 bg-white p-4 rounded-xl shadow-md">
+                <div id="calendar-grid" class="grid grid-cols-7 gap-2 text-center">
+                    <!-- Calendar will be injected here -->
+                </div>
+            </div>
+
+            <!-- Checklist Grid -->
+            <main id="checklist-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Day cards will be injected here by JavaScript -->
+            </main>
+        </div>
+
+        <!-- Syllabus Tracker View -->
+        <div id="syllabus-tracker-view" class="hidden">
+             <!-- View Toggle Button -->
+            <div class="text-center mb-6">
+                <button id="toggle-view-btn-2" class="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-colors duration-300">
+                    View Daily Roadmap
+                </button>
+            </div>
+            <div id="syllabus-container" class="space-y-8">
+                <!-- Syllabus will be injected here -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const checklistGrid = document.getElementById('checklist-grid');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const year = new Date().getFullYear();
+        const month = 8; // September is month 8 (0-indexed)
+        const totalDays = new Date(year, month + 1, 0).getDate();
+        const today = new Date();
+        // Set time to 0 to compare dates only
+        today.setHours(0,0,0,0);
+
+
+        // --- SYLLABUS DATA ---
+        const neetSyllabus = {
+            "Physics": {
+                "Unit 1: Physics and Measurement": ["Units of measurements", "System of Units", "S I Units", "Errors in measurements", "Dimensions of Physics quantities"],
+                "Unit 2: Kinematics": ["Frame of reference", "Motion in a straight line", "Scalars and Vectors", "Relative Velocity", "Projectile Motion", "Uniform Circular Motion"],
+                "Unit 3: Laws of Motion": ["Force and inertia", "Newton's Laws of motion", "Conservation of linear momentum", "Equilibrium of concurrent forces", "Friction", "Dynamics of uniform circular motion"],
+                "Unit 4: Work, Energy, and Power": ["Work, kinetic and potential energies", "Work-energy theorem", "Power", "Conservation of mechanical energy", "Collisions"],
+                "Unit 5: Rotational Motion": ["Centre of mass", "Rotational motion concepts", "Moment of inertia", "Theorems of moment of inertia", "Equilibrium and dynamics of rigid bodies"],
+                "Unit 6: Gravitation": ["Universal law of gravitation", "Acceleration due to gravity", "Kepler's law", "Gravitational potential energy", "Motion of a satellite"],
+                "Unit 7: Properties of Solids and Liquids": ["Elastic behaviour", "Fluid Pressure", "Viscosity", "Bernoulli's principle", "Surface tension", "Heat and thermal expansion", "Heat transfer"],
+                "Unit 8: Thermodynamics": ["Thermal equilibrium", "First law of thermodynamics", "Second law of thermodynamics"],
+                "Unit 9: Kinetic Theory of Gases": ["Equation of state of a perfect gas", "Kinetic theory concepts", "Degrees of freedom", "Law of equipartition of energy", "Mean free path"],
+                "Unit 10: Oscillations and Waves": ["Oscillations and periodic motion", "Simple harmonic motion (S.H.M.)", "Wave motion", "Superposition of waves", "Standing waves and beats"],
+                "Unit 11: Electrostatics": ["Electric charges and Coulomb's law", "Electric field", "Electric flux and Gauss's law", "Electric potential", "Conductors, insulators, and dielectrics", "Capacitors and capacitance"],
+                "Unit 12: Current Electricity": ["Electric current and Ohm's law", "Electrical energy and power", "Combinations of resistors", "Internal resistance and EMF", "Kirchhoff's laws and applications"],
+                "Unit 13: Magnetic Effects of Current and Magnetism": ["Biot-Savart and Ampere's law", "Force on moving charge/conductor", "Torque on a current loop", "Bar magnet and magnetic fields", "Magnetic properties of materials"],
+                "Unit 14: Electromagnetic Induction and Alternating Currents": ["Electromagnetic induction", "Self and mutual inductance", "Alternating currents", "LCR series circuit", "AC generator and transformer"],
+                "Unit 15: Electromagnetic Waves": ["Displacement current", "Electromagnetic waves and spectrum"],
+                "Unit 16: Optics": ["Reflection and Refraction", "Lenses", "Prism", "Optical Instruments", "Wave optics", "Interference", "Diffraction", "Polarization"],
+                "Unit 17: Dual Nature of Matter and Radiation": ["Photoelectric effect", "Matter waves"],
+                "Unit 18: Atoms and Nuclei": ["Atomic models", "Bohr model", "Composition of nucleus", "Mass-energy relation", "Nuclear fission and fusion"],
+                "Unit 19: Electronic Devices": ["Semiconductors and diodes", "Diode applications", "Logic gates"],
+                "Unit 20: Experimental Skills": ["Vernier calipers", "Screw gauge", "Simple Pendulum", "Metre Scale", "Young's modulus", "Surface tension", "Viscosity", "Resonance tube", "Specific heat", "Metre bridge", "Ohm's law", "Galvanometer", "Focal length", "Prism deviation", "Refractive index", "Diode characteristics", "Zener diode", "Component identification"]
+            },
+            "Chemistry": {
+                "Unit 1: Some Basic Concepts in Chemistry": ["Matter and its nature", "Laws of chemical combination", "Atomic and molecular masses", "Mole concept", "Stoichiometry"],
+                "Unit 2: Atomic Structure": ["Electromagnetic radiation", "Bohr model", "Dual nature of matter", "Quantum mechanical model", "Quantum numbers", "Rules for filling electrons"],
+                "Unit 3: Chemical Bonding and Molecular Structure": ["Ionic Bonding", "Covalent Bonding", "VSEPR theory", "Valence bond theory", "Molecular Orbital Theory", "Hydrogen bonding"],
+                "Unit 4: Chemical Thermodynamics": ["Fundamentals of thermodynamics", "First law of thermodynamics", "Hess's law", "Enthalpies of reactions", "Second law of thermodynamics", "Gibbs energy"],
+                "Unit 5: Solutions": ["Expressing concentration", "Raoult's Law", "Colligative properties", "Abnormal molar mass"],
+                "Unit 6: Equilibrium": ["Physical and Chemical equilibria", "Law of chemical equilibrium", "Le Chatelier's principle", "Ionic equilibrium", "Acids and bases", "pH scale", "Buffer solutions", "Solubility products"],
+                "Unit 7: Redox Reactions and Electrochemistry": ["Oxidation and reduction concepts", "Balancing redox reactions", "Electrolytic conduction", "Electrochemical cells", "Nernst equation"],
+                "Unit 8: Chemical Kinetics": ["Rate of a reaction", "Factors affecting rate", "Order and molecularity", "Zero and first-order reactions", "Arrhenius theory"],
+                "Unit 9: Classification of Elements and Periodicity": ["Periodic law and table", "Periodic trends in properties"],
+                "Unit 10: p-Block Elements": ["Group 13 to 18 Elements General Introduction"],
+                "Unit 11: d and f-Block Elements": ["Transition Elements", "Inner Transition Elements"],
+                "Unit 12: Co-ordination Compounds": ["Werner's theory", "Nomenclature", "Isomerism", "Bonding theories"],
+                "Unit 13: Purification and Characterisation of Organic Compounds": ["Purification methods", "Qualitative analysis", "Quantitative analysis"],
+                "Unit 14: Some Basic Principles of Organic Chemistry": ["Tetravalency and classification", "Nomenclature", "Bond fission", "Electronic displacement", "Types of organic reactions"],
+                "Unit 15: Hydrocarbons": ["Alkanes", "Alkenes", "Alkynes", "Aromatic hydrocarbons"],
+                "Unit 16: Organic Compounds Containing Halogens": ["Preparation and properties", "Mechanisms of substitution", "Environmental effects"],
+                "Unit 17: Organic Compounds Containing Oxygen": ["Alcohols, Phenols, and Ethers", "Aldehyde and Ketones", "Carboxylic Acids"],
+                "Unit 18: Organic Compounds Containing Nitrogen": ["Amines", "Diazonium Salts"],
+                "Unit 19: Biomolecules": ["Carbohydrates", "Proteins", "Vitamins", "Nucleic Acids", "Hormones"],
+                "Unit 20: Principles Related to Practical Chemistry": ["Detection of elements and functional groups", "Preparation of inorganic/organic compounds", "Titrimetric exercises", "Qualitative salt analysis", "Thermochemistry and kinetics experiments"]
+            },
+            "Biology": {
+                "Unit 1: Diversity in Living World": ["What is living?", "Taxonomy & Systematics", "Five kingdom classification", "Classification of Plants", "Classification of Animals"],
+                "Unit 2: Structural Organisation in Animals and Plants": ["Plant Morphology and modifications", "Plant Anatomy", "Plant Families", "Animal tissues", "Animal Morphology and Anatomy (Frog)"],
+                "Unit 3: Cell Structure and Function": ["Cell theory", "Prokaryotic and Eukaryotic cell structure", "Cell organelles", "Chemical constituents of living cells", "Cell division"],
+                "Unit 4: Plant Physiology": ["Photosynthesis", "Respiration", "Plant growth and development"],
+                "Unit 5: Human Physiology": ["Breathing and Respiration", "Body fluids and circulation", "Excretory products and their elimination", "Locomotion and Movement", "Neural control and coordination", "Chemical coordination and regulation"],
+                "Unit 6: Reproduction": ["Sexual reproduction in flowering plants", "Human Reproduction", "Reproductive health"],
+                "Unit 7: Genetics and Evolution": ["Heredity and variation", "Molecular basis of Inheritance", "Evolution"],
+                "Unit 8: Biology and Human Welfare": ["Health and Disease", "Microbes in human welfare"],
+                "Unit 9: Biotechnology and Its Applications": ["Principles and process of Biotechnology", "Application of Biotechnology"],
+                "Unit 10: Ecology and Environment": ["Organisms and environment", "Ecosystem", "Biodiversity and its conservation"]
+            }
+        };
+
+        const motivationalQuotes = [
+            "सफलता का सफर मेहनत की राहों से ही होकर गुजरता है। शाबाश!", "हर दिन एक नया मौका है, इसे व्यर्थ न जाने दें। बहुत अच्छे!", "कोशिश करने वालों की कभी हार नहीं होती। लगे रहो!", "तुम्हारा संकल्प ही तुम्हारी सबसे बड़ी ताकत है। बेहतरीन!", "आज की मेहनत, कल तुम्हारे सपनों को हकीकत में बदलेगी। शानदार!", "धीरज रखो, तुम्हारी मेहनत ज़रूर रंग लाएगी। बहुत बढ़िया!", "सपनों को सच करने के लिए, पहले सपने देखना ज़रूरी है। उत्तम!", "मुश्किलें केवल उन्हें मिलती हैं जो उन्हें हराने का दम रखते हैं।", "जीत निश्चित है, अगर तुम हार मानने को तैयार नहीं हो।", "तुम वो सब कर सकते हो जो तुम सोच सकते हो। आगे बढ़ो!", "एक समय में एक दिन, और हर दिन पूरी लगन से।", "संघर्ष जितना बड़ा होगा, जीत उतनी ही शानदार होगी।", "खुद पर विश्वास रखो, तुम्हारे अंदर ब्रह्मांड की शक्ति है।", "आज का दर्द, कल की जीत है। बहुत अच्छा काम!", "सफलता उन्हें मिलती है जिनके इरादों में जान होती है।", "हर छोटा कदम एक बड़ी मंजिल का हिस्सा है।"
+        ];
+        
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+
+        function generateChecklist() {
+            for (let i = 1; i <= totalDays; i++) {
+                const date = new Date(year, month, i);
+                const dayOfWeek = date.getDay(); // 0 for Sunday, 1 for Monday, etc.
+                const dayId = `day-${i}`;
+                const quote = motivationalQuotes[(i - 1) % motivationalQuotes.length];
+
+                const card = document.createElement('div');
+                card.id = dayId;
+                
+                if (dayOfWeek === 0) { // It's Sunday
+                    card.className = 'day-card review-day p-5 rounded-xl shadow-lg border-2 transition-all duration-300 md:col-span-2 lg:col-span-3';
+                    card.innerHTML = generateSundayReviewContent(i, dayOfWeek, quote);
+                } else {
+                    card.className = 'day-card bg-white p-5 rounded-xl shadow-md border-2 border-transparent transition-all duration-300';
+                    card.innerHTML = generateDailyContent(i, dayOfWeek, quote);
+                }
+                checklistGrid.appendChild(card);
+            }
+        }
+
+        function generateCalendar() {
+            const calendarGrid = document.getElementById('calendar-grid');
+            calendarGrid.innerHTML = '';
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'font-bold text-gray-600 text-sm py-2';
+                dayEl.innerText = day;
+                calendarGrid.appendChild(dayEl);
+            });
+
+            const firstDayOfMonth = new Date(year, month, 1).getDay();
+
+            for (let i = 0; i < firstDayOfMonth; i++) {
+                const emptyCell = document.createElement('div');
+                calendarGrid.appendChild(emptyCell);
+            }
+
+            for (let i = 1; i <= totalDays; i++) {
+                const dayWrapper = document.createElement('div');
+                dayWrapper.className = 'flex flex-col items-center';
+
+                const dayCell = document.createElement('button');
+                dayCell.id = `calendar-btn-${i}`;
+                dayCell.className = `p-2 w-full h-10 flex items-center justify-center rounded-md focus:outline-none transition-all duration-200 text-white font-semibold`;
+                dayCell.innerText = i;
+                dayCell.dataset.day = i;
+                dayWrapper.appendChild(dayCell);
+                
+                const date = new Date(year, month, i);
+                if (date.getDay() === 0) { // For sundays, add hour tracker
+                     const hoursEl = document.createElement('span');
+                     hoursEl.id = `calendar-hours-${i}`;
+                     hoursEl.className = 'text-xs text-indigo-600 font-semibold mt-1';
+                     hoursEl.innerText = '0/70';
+                     dayWrapper.appendChild(hoursEl);
+                }
+
+                calendarGrid.appendChild(dayWrapper);
+            }
+        }
+        
+        function updateCalendarColors() {
+            for (let i = 1; i <= totalDays; i++) {
+                const dayCell = document.getElementById(`calendar-btn-${i}`);
+                if (!dayCell) continue;
+
+                const date = new Date(year, month, i);
+                date.setHours(0,0,0,0);
+                const dayOfWeek = date.getDay();
+
+                // Base classes to remove
+                dayCell.classList.remove('bg-green-500', 'bg-red-600', 'bg-gray-800', 'bg-gray-300', 'bg-gradient-to-r', 'from-red-500', 'to-green-500', 'sunday-glow');
+
+                // Future dates
+                if (date > today) {
+                    dayCell.classList.add('bg-gray-800');
+                    if (dayOfWeek === 0) dayCell.classList.add('sunday-glow');
+                    continue;
+                }
+
+                const savedState = localStorage.getItem(`neet-roadmap-ashutosh-day-${i}`);
+                let hours = null;
+                if (savedState) {
+                    const dayState = JSON.parse(savedState);
+                    if(dayState.studyHours) hours = parseFloat(dayState.studyHours);
+                }
+                
+                if (hours !== null) {
+                    if (hours >= 10) {
+                        dayCell.classList.add('bg-green-500');
+                    } else if (hours > 5 && hours < 10) {
+                        dayCell.classList.add('bg-gradient-to-r', 'from-red-500', 'to-green-500');
+                    } else { // hours <= 5
+                        dayCell.classList.add('bg-red-600');
+                    }
+                } else { // Past date with no data
+                    dayCell.classList.add('bg-gray-300');
+                }
+
+                if (dayOfWeek === 0) dayCell.classList.add('sunday-glow');
+            }
+        }
+        
+        function generateDailyContent(dayIndex, dayOfWeek, quote) {
+            const dayId = `day-${dayIndex}`;
+            return `
+                <h3 class="font-bold text-lg text-gray-700 border-b pb-2 mb-3 flex justify-between items-center rounded-t-md p-2 -m-5 mb-3">
+                    <span>September ${dayIndex}</span>
+                    <span class="text-sm font-medium text-gray-500">${dayNames[dayOfWeek]}</span>
+                </h3>
+                <div class="space-y-4">
+                    <!-- Checklists -->
+                     <div><p class="font-semibold text-blue-700 text-sm mb-2">Lectures</p><div class="space-y-2 pl-2"><label for="${dayId}-task1" class="flex items-center cursor-pointer"><input type="checkbox" id="${dayId}-task1" class="h-5 w-5 r r-c"><span class="ml-3 text-gray-700">Physics</span></label><label for="${dayId}-task2" class="flex items-center cursor-pointer"><input type="checkbox" id="${dayId}-task2" class="h-5 w-5 r r-c"><span class="ml-3 text-gray-700">Chemistry</span></label><label for="${dayId}-task3" class="flex items-center cursor-pointer"><input type="checkbox" id="${dayId}-task3" class="h-5 w-5 r r-c"><span class="ml-3 text-gray-700">Biology</span></label></div></div>
+                     <div><p class="font-semibold text-green-700 text-sm mb-2">NCERT</p><div class="space-y-2 pl-2"><label for="${dayId}-task4" class="flex items-center cursor-pointer"><input type="checkbox" id="${dayId}-task4" class="h-5 w-5 r r-c"><span class="ml-3 text-gray-700">Read/Revise (3 Hrs)</span></label></div></div>
+                     <div><p class="font-semibold text-red-700 text-sm mb-2">MCQ Practice <span class="text-red-500 font-bold">(MUST)</span></p><div class="space-y-2 pl-2"><label for="${dayId}-task5" class="flex items-center cursor-pointer"><input type="checkbox" id="${dayId}-task5" class="h-5 w-5 r r-c"><span class="ml-3 text-gray-700">45 Physics</span></label><label for="${dayId}-task6" class="flex items-center cursor-pointer"><input type="checkbox" id="${dayId}-task6" class="h-5 w-5 r r-c"><span class="ml-3 text-gray-700">45 Chemistry</span></label><label for="${dayId}-task7" class="flex items-center cursor-pointer"><input type="checkbox" id="${dayId}-task7" class="h-5 w-5 r r-c"><span class="ml-3 text-gray-700">90 Biology</span></label></div></div>
+                     <div>
+                        <p class="font-semibold text-blue-700 text-sm mb-2">Self-Study Tracker</p>
+                        <div class="space-y-2 pl-2 flex items-center">
+                            <input type="number" id="${dayId}-study-hours" class="w-20 p-1.5 border border-gray-300 rounded-md text-sm" placeholder="Hours">
+                            <button id="${dayId}-log-hours-btn" class="ml-3 px-3 py-1.5 bg-indigo-600 text-white text-sm font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Log Hrs</button>
+                        </div>
+                     </div>
+                </div>
+                <div class="mt-6"><h4 class="font-semibold text-sm text-gray-600 mb-2">Daily Analysis</h4><textarea id="${dayId}-notes" class="w-full h-28 p-2 border rounded-md text-sm" placeholder="What went right...\nWhat went wrong...\nImprovements..."></textarea></div>
+                <div id="${dayId}-motivation" class="motivational-quote mt-4 p-3 bg-green-100 text-green-800 rounded-lg text-center font-medium">${quote}</div>
+            `;
+        }
+        
+        function generateSundayReviewContent(dayIndex, dayOfWeek, quote) {
+             const dayId = `day-${dayIndex}`;
+             return `
+                <h3 class="font-bold text-xl text-purple-800 border-b-2 border-purple-200 pb-2 mb-4 flex justify-between items-center bg-purple-200 rounded-t-md p-3 -m-5 mb-4">
+                    <span>Weekly Review: September ${dayIndex}</span>
+                    <span class="text-lg font-semibold">${dayNames[dayOfWeek]}</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Left Side: Weekly Reflection -->
+                    <div class="space-y-4">
+                        <h4 class="text-lg font-bold text-gray-700">This Week's Reflection</h4>
+                        <div class="bg-white p-4 rounded-lg shadow">
+                            <label class="font-semibold text-gray-600">Total Hours Studied This Week:</label>
+                            <p id="${dayId}-weekly-hours" class="text-2xl font-bold text-indigo-600">0 Hours</p>
+                             <div class="mt-2">
+                                <div class="flex justify-between text-sm font-medium text-gray-600">
+                                    <span>Weekly Goal</span>
+                                    <span>70 Hours</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+                                    <div id="${dayId}-weekly-progress" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="bg-white p-4 rounded-lg shadow space-y-3">
+                            <div><label for="${dayId}-review-best" class="font-semibold text-gray-600 mb-1 block">Did you give your best this week?</label><textarea id="${dayId}-review-best" rows="2" class="w-full p-2 border rounded-md text-sm" placeholder="Yes/No and why..."></textarea></div>
+                            <div><label for="${dayId}-review-right" class="font-semibold text-gray-600 mb-1 block">What went right?</label><textarea id="${dayId}-review-right" rows="3" class="w-full p-2 border rounded-md text-sm" placeholder="List your wins, big or small..."></textarea></div>
+                            <div><label for="${dayId}-review-wrong" class="font-semibold text-gray-600 mb-1 block">What went wrong?</label><textarea id="${dayId}-review-wrong" rows="3" class="w-full p-2 border rounded-md text-sm" placeholder="Identify the challenges and obstacles..."></textarea></div>
+                            <div><label for="${dayId}-review-improve" class="font-semibold text-gray-600 mb-1 block">Plan to improve for next week:</label><textarea id="${dayId}-review-improve" rows="3" class="w-full p-2 border rounded-md text-sm" placeholder="Actionable steps for the coming week..."></textarea></div>
+                        </div>
+                    </div>
+                    <!-- Right Side: Test Analysis -->
+                    <div class="space-y-4">
+                         <h4 class="text-lg font-bold text-gray-700">Sunday Test Analysis</h4>
+                         <div class="bg-white p-4 rounded-lg shadow space-y-3">
+                             <p class="font-semibold text-gray-600">Enter Your Scores:</p>
+                             <div class="grid grid-cols-[auto,1fr,auto] items-center gap-x-3 gap-y-2">
+                                <label>Biology:</label>
+                                <input type="number" id="${dayId}-score-bio" class="w-full p-1.5 border rounded-md text-sm" placeholder="0">
+                                <span class="text-gray-500">/ 360</span>
+                                
+                                <label>Physics:</label>
+                                <input type="number" id="${dayId}-score-phy" class="w-full p-1.5 border rounded-md text-sm" placeholder="0">
+                                <span class="text-gray-500">/ 180</span>
+
+                                <label>Chemistry:</label>
+                                <input type="number" id="${dayId}-score-chem" class="w-full p-1.5 border rounded-md text-sm" placeholder="0">
+                                <span class="text-gray-500">/ 180</span>
+                             </div>
+                             <hr class="my-2"/>
+                             <div class="flex justify-between items-center mt-2">
+                                <span class="font-bold text-indigo-800">Total Score:</span>
+                                <div>
+                                    <span id="${dayId}-score-total" class="font-bold text-xl text-indigo-800">0</span>
+                                    <span class="font-bold text-indigo-800">/ 720</span>
+                                </div>
+                             </div>
+                             <hr/>
+                            <div><label for="${dayId}-test-mistakes" class="font-semibold text-gray-600 mb-1 block">Where did you make the most mistakes?</label><textarea id="${dayId}-test-mistakes" rows="3" class="w-full p-2 border rounded-md text-sm" placeholder="e.g., specific topics, calculation errors, conceptual gaps..."></textarea></div>
+                            <div><label for="${dayId}-test-improve" class="font-semibold text-gray-600 mb-1 block">How will you improve on these mistakes?</label><textarea id="${dayId}-test-improve" rows="3" class="w-full p-2 border rounded-md text-sm" placeholder="e.g., revise theory, more practice, focus on weak areas..."></textarea></div>
+                         </div>
+                         <div class="mt-4 p-3 bg-purple-100 text-purple-800 rounded-lg text-center font-medium">समीक्षा प्रगति की कुंजी है। अपनी गलतियों से सीखें और मजबूत बनें।</div>
+                    </div>
+                </div>
+             `;
+        }
+
+        function calculateWeeklyHours(sundayIndex) {
+            let totalHours = 0;
+            const weekStart = Math.max(1, sundayIndex - 6);
+            for(let i = weekStart; i <= sundayIndex; i++) {
+                if(document.getElementById(`day-${i}`)){
+                    const savedState = localStorage.getItem(`neet-roadmap-ashutosh-day-${i}`);
+                    if(savedState) {
+                        const dayState = JSON.parse(savedState);
+                        if (dayState.studyHours !== undefined) {
+                           totalHours += parseFloat(dayState.studyHours) || 0;
+                        }
+                    }
+                }
+            }
+            
+            document.getElementById(`day-${sundayIndex}-weekly-hours`).innerText = `${totalHours.toFixed(1)} Hours`;
+            
+            const calendarHoursEl = document.getElementById(`calendar-hours-${sundayIndex}`);
+            if (calendarHoursEl) {
+                calendarHoursEl.innerText = `${totalHours.toFixed(1)}/70`;
+            }
+
+            const weeklyProgressBar = document.getElementById(`day-${sundayIndex}-weekly-progress`);
+            const percentage = Math.min(100, (totalHours / 70) * 100);
+            weeklyProgressBar.style.width = `${percentage}%`;
+        }
+        
+        function updateTotalScore(dayIndex) {
+            const dayId = `day-${dayIndex}`;
+            const bioScore = parseInt(document.getElementById(`${dayId}-score-bio`).value) || 0;
+            const phyScore = parseInt(document.getElementById(`${dayId}-score-phy`).value) || 0;
+            const chemScore = parseInt(document.getElementById(`${dayId}-score-chem`).value) || 0;
+            const total = bioScore + phyScore + chemScore;
+            document.getElementById(`${dayId}-score-total`).innerText = total;
+        }
+
+        function saveData(dayIndex) {
+            const dayId = `day-${dayIndex}`;
+            const date = new Date(year, month, dayIndex);
+            const dayOfWeek = date.getDay();
+            const dayCard = document.getElementById(dayId);
+
+            let dayState = {};
+            let isCompleted = false;
+
+            if (dayOfWeek === 0) { // Sunday
+                dayState = {
+                    reviewBest: document.getElementById(`${dayId}-review-best`).value,
+                    reviewRight: document.getElementById(`${dayId}-review-right`).value,
+                    reviewWrong: document.getElementById(`${dayId}-review-wrong`).value,
+                    reviewImprove: document.getElementById(`${dayId}-review-improve`).value,
+                    scoreBio: document.getElementById(`${dayId}-score-bio`).value,
+                    scorePhy: document.getElementById(`${dayId}-score-phy`).value,
+                    scoreChem: document.getElementById(`${dayId}-score-chem`).value,
+                    testMistakes: document.getElementById(`${dayId}-test-mistakes`).value,
+                    testImprove: document.getElementById(`${dayId}-test-improve`).value,
+                };
+            } else { // Other days
+                const tasks = Array.from({length: 7}, (_, i) => document.getElementById(`${dayId}-task${i + 1}`));
+                dayState = {
+                    tasks: tasks.map(task => task.checked),
+                    notes: document.getElementById(`${dayId}-notes`).value,
+                    studyHours: document.getElementById(`${dayId}-study-hours`).value,
+                };
+                isCompleted = tasks.every(task => task.checked);
+                const motivationDiv = document.getElementById(`${dayId}-motivation`);
+                if (isCompleted) {
+                    motivationDiv.classList.add('show');
+                    dayCard.classList.add('completed');
+                } else {
+                    motivationDiv.classList.remove('show');
+                    dayCard.classList.remove('completed');
+                }
+            }
+            
+            localStorage.setItem(`neet-roadmap-ashutosh-${dayId}`, JSON.stringify(dayState));
+            updateProgressBar();
+            
+            // Find the Sunday of the current week and update its hours
+            const dayOfWeekForUpdate = date.getDay();
+            const sundayIndex = dayIndex - dayOfWeekForUpdate;
+            if(document.getElementById(`day-${sundayIndex}`)){
+                 calculateWeeklyHours(sundayIndex);
+            }
+            const nextSundayIndex = sundayIndex + 7;
+            if(document.getElementById(`day-${nextSundayIndex}`)){
+                 calculateWeeklyHours(nextSundayIndex);
+            }
+            
+            updateCalendarColors();
+        }
+
+        function loadState() {
+            for (let i = 1; i <= totalDays; i++) {
+                const dayId = `day-${i}`;
+                const savedState = localStorage.getItem(`neet-roadmap-ashutosh-${dayId}`);
+                if (savedState) {
+                    const dayState = JSON.parse(savedState);
+                    const date = new Date(year, month, i);
+                    const dayOfWeek = date.getDay();
+                    if(dayOfWeek === 0) { // Sunday
+                        document.getElementById(`${dayId}-review-best`).value = dayState.reviewBest || '';
+                        document.getElementById(`${dayId}-review-right`).value = dayState.reviewRight || '';
+                        document.getElementById(`${dayId}-review-wrong`).value = dayState.reviewWrong || '';
+                        document.getElementById(`${dayId}-review-improve`).value = dayState.reviewImprove || '';
+                        document.getElementById(`${dayId}-score-bio`).value = dayState.scoreBio || '';
+                        document.getElementById(`${dayId}-score-phy`).value = dayState.scorePhy || '';
+                        document.getElementById(`${dayId}-score-chem`).value = dayState.scoreChem || '';
+                        document.getElementById(`${dayId}-test-mistakes`).value = dayState.testMistakes || '';
+                        document.getElementById(`${dayId}-test-improve`).value = dayState.testImprove || '';
+                        updateTotalScore(i);
+                        calculateWeeklyHours(i);
+                    } else { // Other days
+                        const tasks = Array.from({length: 7}, (_, j) => document.getElementById(`${dayId}-task${j + 1}`));
+                        tasks.forEach((task, index) => {
+                            if (task && dayState.tasks && dayState.tasks[index] !== undefined) task.checked = dayState.tasks[index];
+                        });
+                        document.getElementById(`${dayId}-notes`).value = dayState.notes || '';
+                        document.getElementById(`${dayId}-study-hours`).value = dayState.studyHours || '';
+                    }
+                }
+            }
+            updateProgressBar();
+            updateCalendarColors();
+        }
+        
+        function updateProgressBar() {
+            let completedDays = 0;
+            for (let i = 1; i <= totalDays; i++) {
+                 const dayId = `day-${i}`;
+                 const date = new Date(year, month, i);
+                 if(date.getDay() !== 0) { // Only count weekdays for progress
+                    const tasks = Array.from({length: 7}, (_, j) => document.getElementById(`${dayId}-task${j + 1}`));
+                    if (tasks.every(task => task && task.checked)) completedDays++;
+                 }
+            }
+            const nonSundayDays = Array.from({length: totalDays}, (_, i) => new Date(year, month, i + 1)).filter(d => d.getDay() !== 0).length;
+            const percentage = nonSundayDays > 0 ? Math.round((completedDays / nonSundayDays) * 100) : 0;
+            progressBar.style.width = `${percentage}%`;
+            progressText.innerText = `${percentage}%`;
+        }
+
+        // --- SYLLABUS TRACKER FUNCTIONS ---
+        function generateSyllabusTracker() {
+            const container = document.getElementById('syllabus-container');
+            container.innerHTML = '';
+            const subjectColors = {
+                "Physics": "bg-blue-100 border-blue-300",
+                "Chemistry": "bg-green-100 border-green-300",
+                "Biology": "bg-yellow-100 border-yellow-300"
+            };
+
+            for (const subject in neetSyllabus) {
+                const subjectCard = document.createElement('div');
+                subjectCard.className = `syllabus-subject-card p-6 rounded-xl shadow-lg border-2 ${subjectColors[subject]}`;
+                
+                let totalChapters = 0;
+                let unitHTML = '';
+
+                for(const unit in neetSyllabus[subject]) {
+                    unitHTML += `<div class="mt-4"><h4 class="font-semibold text-gray-700">${unit}</h4><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2 mt-2 pl-4">`;
+                    neetSyllabus[subject][unit].forEach(chapter => {
+                        totalChapters++;
+                        const chapterId = `syllabus-${subject}-${totalChapters}`;
+                        unitHTML += `<label for="${chapterId}" class="flex items-center cursor-pointer"><input type="checkbox" id="${chapterId}" class="h-4 w-4 r r-c" data-subject="${subject}"><span class="ml-2 text-sm text-gray-800">${chapter}</span></label>`;
+                    });
+                    unitHTML += `</div></div>`;
+                }
+
+                subjectCard.innerHTML = `
+                    <div class="flex justify-between items-center border-b-2 pb-2 border-gray-300">
+                        <h3 class="text-2xl font-bold text-gray-800">${subject}</h3>
+                        <div id="counter-${subject}" class="font-semibold text-sm">
+                            <span class="text-green-600">Completed: 0</span> | 
+                            <span class="text-red-600">Left: ${totalChapters}</span> | 
+                            <span class="text-blue-800">Total: ${totalChapters}</span>
+                        </div>
+                    </div>
+                    ${unitHTML}
+                `;
+                container.appendChild(subjectCard);
+            }
+        }
+
+        function updateSyllabusCount(subject) {
+            const checkboxes = document.querySelectorAll(`#syllabus-container input[data-subject="${subject}"]`);
+            const total = checkboxes.length;
+            const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const left = total - completed;
+            
+            const counterEl = document.getElementById(`counter-${subject}`);
+            counterEl.innerHTML = `
+                <span class="text-green-600">Completed: ${completed}</span> | 
+                <span class="text-red-600">Left: ${left}</span> | 
+                <span class="text-blue-800">Total: ${total}</span>
+            `;
+        }
+
+        function saveSyllabusState() {
+            const state = {};
+            const checkboxes = document.querySelectorAll('#syllabus-container input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                state[cb.id] = cb.checked;
+            });
+            localStorage.setItem('neet-syllabus-tracker-state', JSON.stringify(state));
+        }
+
+        function loadSyllabusState() {
+            const savedState = localStorage.getItem('neet-syllabus-tracker-state');
+            if(savedState) {
+                const state = JSON.parse(savedState);
+                for(const id in state) {
+                    const checkbox = document.getElementById(id);
+                    if(checkbox) {
+                        checkbox.checked = state[id];
+                    }
+                }
+            }
+            ['Physics', 'Chemistry', 'Biology'].forEach(subject => updateSyllabusCount(subject));
+        }
+
+
+        // --- MAIN EVENT LISTENER ---
+        document.addEventListener('DOMContentLoaded', () => {
+            generateChecklist();
+            generateCalendar();
+            generateSyllabusTracker();
+            
+            const dailyView = document.getElementById('daily-tracker-view');
+            const syllabusView = document.getElementById('syllabus-tracker-view');
+            const toggleBtn1 = document.getElementById('toggle-view-btn');
+            const toggleBtn2 = document.getElementById('toggle-view-btn-2');
+            const headerSubtitle = document.getElementById('header-subtitle');
+
+            function toggleViews() {
+                dailyView.classList.toggle('hidden');
+                syllabusView.classList.toggle('hidden');
+                if (syllabusView.classList.contains('hidden')) {
+                    headerSubtitle.textContent = 'Your daily checklist for September to conquer NEET.';
+                } else {
+                    headerSubtitle.textContent = 'Track your progress across the entire NEET syllabus.';
+                }
+            }
+
+            toggleBtn1.addEventListener('click', toggleViews);
+            toggleBtn2.addEventListener('click', toggleViews);
+            
+            document.getElementById('calendar-grid').addEventListener('click', (e) => {
+                if (e.target.dataset.day) {
+                    const day = e.target.dataset.day;
+                    const targetCard = document.getElementById(`day-${day}`);
+                    if (targetCard) {
+                        targetCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            });
+
+            document.getElementById('syllabus-container').addEventListener('change', (e) => {
+                if (e.target.type === 'checkbox') {
+                    const subject = e.target.dataset.subject;
+                    updateSyllabusCount(subject);
+                    saveSyllabusState();
+                }
+            });
+
+            for (let i = 1; i <= totalDays; i++) {
+                const dayId = `day-${i}`;
+                const date = new Date(year, month, i);
+                const dayOfWeek = date.getDay();
+
+                if (dayOfWeek === 0) {
+                    const fields = ['review-best', 'review-right', 'review-wrong', 'review-improve', 'score-bio', 'score-phy', 'score-chem', 'test-mistakes', 'test-improve'];
+                    fields.forEach(field => {
+                        const el = document.getElementById(`${dayId}-${field}`);
+                        if(el) el.addEventListener('input', () => saveData(i));
+                    });
+                } else { 
+                    for(let j = 1; j <= 7; j++) {
+                        const el = document.getElementById(`${dayId}-task${j}`);
+                        if (el) el.addEventListener('change', () => saveData(i));
+                    }
+                    const notesEl = document.getElementById(`${dayId}-notes`);
+                    if(notesEl) notesEl.addEventListener('input', () => saveData(i));
+                    
+                    const hoursInput = document.getElementById(`${dayId}-study-hours`);
+                    const logBtn = document.getElementById(`${dayId}-log-hours-btn`);
+                    if(hoursInput) hoursInput.addEventListener('input', () => saveData(i));
+                    if(logBtn) logBtn.addEventListener('click', () => saveData(i));
+                }
+            }
+            
+            loadState();
+            loadSyllabusState();
+        });
+    </script>
+</body>
+</html>
