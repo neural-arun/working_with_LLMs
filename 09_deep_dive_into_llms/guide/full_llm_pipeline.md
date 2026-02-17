@@ -1,3 +1,47 @@
+# The Complete LLM Pipeline
+
+### From Raw Data to Production-Grade AI Systems
+
+---
+
+This guide explains how modern large language models are **actually built, aligned, deployed, and controlled** in the real world.
+
+Not prompt tricks.  
+Not model hype.  
+Not abstract research-only theory.
+
+This is **system-level thinking** — the full pipeline from raw data to production behavior.
+
+---
+
+### What this guide covers
+
+- How training data shapes failure modes  
+- What pretraining really gives you (and what it doesn’t)  
+- When to fine-tune vs when to use RAG (and why hybrids win)  
+- How preference optimization changes model behavior  
+- What actually happens at inference time  
+- How tools, retrieval, memory, and execution fit together  
+- Where hallucinations come from — and how to engineer against them  
+- How real systems are deployed, evaluated, monitored, and rolled back  
+
+---
+
+### Who this is for
+
+- Engineers building real LLM systems  
+- Builders who want control, not magic  
+- People shipping products, not demos  
+
+If you are looking for shortcuts or vibes, stop here.  
+If you want **predictable, debuggable, production-grade AI**, keep reading.
+
+---
+
+**Arun**  
+2026
+
+<div style="page-break-after: always;"></div>
 
 # PART 0 — EXECUTIVE SUMMARY & QUICK MAP
 
